@@ -2,6 +2,7 @@ package com.criptext.uisample;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.criptext.monkeykitui.recycler.MonkeyItem;
 
@@ -61,7 +62,7 @@ public class SlowMessageLoader  {
             return null;
 
         ArrayList<MonkeyItem> arrayList = new ArrayList<MonkeyItem>();
-        long timestamp = System.currentTimeMillis() - 1000 * 60 * 60 * (batchNumber++) * 24;
+        long timestamp = System.currentTimeMillis() - 1000 * 60 * 60 * (++batchNumber) * 24;
         for(int i = 0; i < 26; i++){
             //Log.d("SlowMessageLoader", "creating new msg: " + timestamp);
             Random r = new Random();
@@ -91,6 +92,7 @@ public class SlowMessageLoader  {
             timestamp += r.nextInt(1000 * 60 * 10);
             arrayList.add(item);
         }
+
         return arrayList;
     }
 
