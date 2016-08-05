@@ -60,7 +60,7 @@ open class DefaultVoiceNotePlayer(monkeyAdapter : MonkeyAdapter, recyclerView: R
         this.adapter = monkeyAdapter
         adapter.audioHandler = this
         updateProgressEnabled = true
-        //initPlayer()
+        player = MediaPlayer()
         handler = Handler()
 
 
@@ -178,7 +178,7 @@ open class DefaultVoiceNotePlayer(monkeyAdapter : MonkeyAdapter, recyclerView: R
     }
 
     private fun rebindAudioHolder(monkeyItem: MonkeyItem){
-        val adapterPosition = adapter.getItemPositionByTimestamp(monkeyItem)
+        val adapterPosition = adapter.getItemPositionById(monkeyItem)
         val audioHolder = getAudioHolder(adapterPosition)
         if (audioHolder != null)
             adapter.onBindViewHolder(audioHolder, adapterPosition)
@@ -219,7 +219,7 @@ open class DefaultVoiceNotePlayer(monkeyAdapter : MonkeyAdapter, recyclerView: R
 
     open protected fun getAudioHolder(): MonkeyAudioHolder? {
         val currentMonkeyItem = currentlyPlayingItem?.item ?: return null
-        val adapterPosition = adapter.getItemPositionByTimestamp(currentMonkeyItem)
+        val adapterPosition = adapter.getItemPositionById(currentMonkeyItem)
         return getAudioHolder(adapterPosition)
     }
 

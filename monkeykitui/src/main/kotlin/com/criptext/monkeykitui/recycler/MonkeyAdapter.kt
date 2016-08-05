@@ -434,6 +434,16 @@ open class MonkeyAdapter(ctx: Context, list : ArrayList<MonkeyItem>) : RecyclerV
             })
 
     /**
+     * Finds the adapter position by the MonkeyItem's id using binary search.
+     * @param item the Monkeyitem.
+     * @return The adapter position of the MonkeyItem. If the item was not found returns -1.
+     */
+    fun getItemPositionById(item: MonkeyItem) = messagesList.binarySearch(item,
+            Comparator { t1, t2 ->
+                t1.getMessageId().compareTo(t2.getMessageId())
+            })
+
+    /**
      * Adds a new item to the RecyclerView with a smooth scrolling animation
      * @param item MonkeyItem to add. It will be added at the end of the messagesList, so it should
      * have a higher timestamp than the other messages.
