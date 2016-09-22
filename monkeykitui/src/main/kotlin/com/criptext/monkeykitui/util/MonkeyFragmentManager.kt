@@ -143,7 +143,8 @@ class MonkeyFragmentManager(val activity: AppCompatActivity){
         ft.addToBackStack(null)
         ft.commit()
 
-        monkeyToolbar?.configureForChat(chatFragment.getChatTitle(), chatFragment.getAvatarURL(), chatFragment.isGroupConversation() ?: false)
+        monkeyToolbar?.configureForChat(chatFragment.getChatTitle(), chatFragment.getAvatarURL(),
+                chatFragment.isGroupConversation() ?: false, chatFragment.getConversationId())
 
         return list
     }
