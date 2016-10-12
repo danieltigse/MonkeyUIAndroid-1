@@ -1,11 +1,15 @@
 package com.criptext.monkeykitui.input.recorder
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Build
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.criptext.monkeykitui.R
@@ -35,6 +39,10 @@ class DefaultVoiceNoteRecorder(ctx : Context, val maxRecordingSize: Long) : Voic
     override fun startRecording(): Boolean{
 
         try {
+
+            if(!hasPermissions(null))
+                return false
+
             val res = ctx.resources
             val outputFile = OutputFile.create(ctx,"${res.getString(R.string.mk_file_dir)}/" +
                     res.getString(R.string.mk_sent_audio_dir),
@@ -162,6 +170,18 @@ class DefaultVoiceNoteRecorder(ctx : Context, val maxRecordingSize: Long) : Voic
             inputListener?.onNewItem(newItem)
         } else
             inputListener?.onNewItemFileError(MonkeyItem.MonkeyItemType.audio.ordinal)
+    }
+
+    fun hasPermissions(runnable: Runnable?): Boolean{
+
+        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.WRITE_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED) {
+            inputListener?.onNewItemNeedPermissions(arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.RECORD_AUDIO), runnable)
+            return false
+        }
+
+        return true
     }
 
 }

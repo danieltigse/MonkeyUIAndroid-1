@@ -1,13 +1,16 @@
 package com.criptext.monkeykitui.input.attachment
 
+import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.criptext.monkeykitui.input.photoEditor.PhotoEditorActivity
 import com.criptext.monkeykitui.input.listeners.InputListener
@@ -55,6 +58,11 @@ class CameraHandler constructor(var context : Context){
     }
 
     fun startPhotoEditor(photoUri: Uri?){
+
+        if(!hasPermissions(Runnable { startPhotoEditor(photoUri) })) {
+            return
+        }
+
         val intent = Intent(context, PhotoEditorActivity::class.java)
         outputFile = initOutputFile()
         if(outputFile != null) {
@@ -68,6 +76,10 @@ class CameraHandler constructor(var context : Context){
     }
 
     fun takePicture() {
+
+        if(!hasPermissions(Runnable { takePicture() })) {
+            return
+        }
 
         if(tempFile == null)
             initTemporaryPhotoFile()
@@ -214,5 +226,17 @@ class CameraHandler constructor(var context : Context){
         }
 
         return
+    }
+
+    fun hasPermissions(runnable: Runnable?): Boolean{
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) !== PackageManager.PERMISSION_GRANTED) {
+            inputListener?.onNewItemNeedPermissions(arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA), runnable)
+            return false
+        }
+
+        return true
     }
 }

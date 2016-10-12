@@ -10,4 +10,6 @@ interface InputListener {
     fun onNewItem(item : MonkeyItem)
 
     fun onNewItemFileError(type: Int)
+
+    fun onNewItemNeedPermissions(permissions: Array<String>, pendingAction: Runnable?)
 }

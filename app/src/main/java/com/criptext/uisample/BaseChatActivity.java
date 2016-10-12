@@ -1,7 +1,10 @@
 package com.criptext.uisample;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -25,6 +28,8 @@ public abstract class BaseChatActivity extends AppCompatActivity implements Chat
     private Handler handler = new Handler();
     SlowMessageLoader loader; //loads fake messages
     FakeFiles fakeFiles; //manages fake photos and voice notes.
+    static int MY_PERMISSIONS_REQUEST = 8989;
+    Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,13 @@ public abstract class BaseChatActivity extends AppCompatActivity implements Chat
         //Everytime a new item is composed with the input view, create a new MessageItem instance of it
         //and add it to the recyclerView.
         return new InputListener() {
+
+            @Override
+            public void onNewItemNeedPermissions(@NotNull String[] permissions, @Nullable Runnable pendingAction) {
+                ActivityCompat.requestPermissions(BaseChatActivity.this, permissions, MY_PERMISSIONS_REQUEST);
+                runnable = pendingAction;
+            }
+
             @Override
             public void onNewItemFileError(@NotNull int filetype) {
                 Toast.makeText(BaseChatActivity.this, "Error writing file of type " +
@@ -69,6 +81,22 @@ public abstract class BaseChatActivity extends AppCompatActivity implements Chat
                     smoothlyAddNewItem(newItem); // Add to recyclerView
                 }
             };
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+
+        if(requestCode == MY_PERMISSIONS_REQUEST){
+            int totalPermissionGranted = 0;
+            for(int i = 0; i < grantResults.length; i++){
+                if(grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                    totalPermissionGranted++;
+            }
+            if (permissions.length == totalPermissionGranted && runnable != null) {
+                runnable.run();
+            }
+        }
+
     }
 
     private void mockFileNetworkRequests(MonkeyItem item) {
